@@ -16,28 +16,41 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Build for macOS
-        run: |
-          rustup target add x86_64-apple-darwin
-          cargo build --release --target x86_64-apple-darwin
+      # - uses: actions/checkout@v4
+      # - name: Build for macOS
+      #   run: |
+      #     rustup target add x86_64-apple-darwin
+      #     cargo build --release --target x86_64-apple-darwin
 
-      - name: Extract Release Tag
-        id: extract_tag
+      # Step 2: Fetch all tags
+      - name: Fetch All Tags
+        run: git fetch --tags
+
+      # Step 3: Get the latest version tag
+      - name: Get Latest Version Tag
+        id: get_latest_tag
         run: |
-          tag=$(git describe --tags --abbrev=0)
-          echo "release_tag=${tag}" >> $GITHUB_OUTPUT
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $latest_tag"
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
+      # Step 4: Calculate the new version tag
+      - name: Increment Version
+        id: increment_version
+        run: |
+          latest_tag=${latest_tag:-v0.0.0}
+          version_without_v=${latest_tag#v}
+          IFS='.' read -r major minor patch <<< "$version_without_v"
+          patch=$((patch + 1))
+          new_version="v${major}.${minor}.${patch}"
+          echo "New version: $new_version"
+          echo "new_version=$new_version" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: target/x86_64-apple-darwin/release/todo-app
-          name: ${{ steps.extract_tag.outputs.release_tag }}
-          tag_name: ${{ steps.extract_tag.outputs.release_tag }}
+          tag_name: ${{ env.new_version }}
+          name: Release ${{ env.new_version }}
           draft: false
           prerelease: false
-
-      - name: Update Latest Tag
-        run: |
-          git tag -f latest
-          git push origin -f latest
