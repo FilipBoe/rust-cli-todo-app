@@ -15,20 +15,14 @@ pub struct Todo {
 }
 
 impl fmt::Display for Todo {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
-            f,
-
+            formatter,
             "ID: {:?}, Title: {}, Description: {}, Completed: {}, Created At: {}",
-
             self.id.unwrap_or(0),
-
             self.title,
-
             self.description.as_deref().unwrap_or("None"),
-
             self.completed,
-
             self.created_at.map_or("None".to_string(), |dt| dt.to_string())
         )
     }
