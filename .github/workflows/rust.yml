@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build for macOS
-        run: cargo build --target x86_64-apple-darwin --verbose
+        run: |
+          rustup target add x86_64-apple-darwin
+          cargo build --target x86_64-apple-darwin --verbose
 
   release:
     runs-on: ubuntu-latest
