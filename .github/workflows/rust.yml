@@ -11,9 +11,22 @@ env:
 permissions:
   contents: write
 
+# when implementing windows: https://dzfrias.dev/blog/deploy-rust-cross-platform-github-actions/
+
 jobs:
   build_and_release:
     runs-on: macos-latest
+
+    strategy:
+      matrix:
+        include:
+          - build: macos
+            os: macos-latest
+            target: x86_64-apple-darwin
+
+          # - build: windows-gnu
+          #   os: windows-latest
+          #   target: x86_64-pc-windows-gnu
 
     steps:
       - uses: actions/checkout@v4
@@ -29,10 +42,32 @@ jobs:
           scheme: semver
           increment: patch
 
+      - name: Build archive
+        shell: bash
+        run: |
+          # Replace with the name of your binary
+          binary_name="todo-app"
+
+          dirname="$binary_name-${{ steps.version.outputs.version }}-${{ matrix.target }}"
+          mkdir "$dirname"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            mv "target/${{ matrix.target }}/release/$binary_name.exe" "$dirname"
+          else
+            mv "target/${{ matrix.target }}/release/$binary_name" "$dirname"
+          fi
+
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            7z a "$dirname.zip" "$dirname"
+            echo "ASSET=$dirname.zip" >> $GITHUB_ENV
+          else
+            tar -czf "$dirname.tar.gz" "$dirname"
+            echo "ASSET=$dirname.tar.gz" >> $GITHUB_ENV
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: target/x86_64-apple-darwin/release/todo-app
+          files: ${{ env.ASSET }}
           tag_name: ${{ steps.version.outputs.version }}
           name: Release ${{ steps.version.outputs.version }}
           draft: false
