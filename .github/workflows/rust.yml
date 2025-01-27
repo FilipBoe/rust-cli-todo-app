@@ -21,8 +21,7 @@ jobs:
 
       - name: Debug
         run: |
-          ls -al
-          tree target -L 2
+          ls -la
 
   release:
     runs-on: ubuntu-latest
