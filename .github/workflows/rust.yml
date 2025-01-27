@@ -54,3 +54,4 @@ jobs:
           name: Release ${{ env.new_version }}
           draft: false
           prerelease: false
+          body: "Automated release of ${{ env.new_version }} by GitHub Actions"
