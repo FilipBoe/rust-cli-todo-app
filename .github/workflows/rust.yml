@@ -16,11 +16,11 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      # - uses: actions/checkout@v4
-      # - name: Build for macOS
-      #   run: |
-      #     rustup target add x86_64-apple-darwin
-      #     cargo build --release --target x86_64-apple-darwin
+      - uses: actions/checkout@v4
+      - name: Build for macOS
+        run: |
+          # rustup target add x86_64-apple-darwin
+          # cargo build --release --target x86_64-apple-darwin
 
       # Step 2: Fetch all tags
       - name: Fetch All Tags
