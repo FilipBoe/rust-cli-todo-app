@@ -22,36 +22,19 @@ jobs:
           # rustup target add x86_64-apple-darwin
           # cargo build --release --target x86_64-apple-darwin
 
-      # Step 2: Fetch all tags
-      - name: Fetch All Tags
-        run: git fetch --tags
-
-      # Step 3: Get the latest version tag
-      - name: Get Latest Version Tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "Latest tag: $latest_tag"
-          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-
-      # Step 4: Calculate the new version tag
-      - name: Increment Version
-        id: increment_version
-        run: |
-          latest_tag=${latest_tag:-v0.0.0}
-          version_without_v=${latest_tag#v}
-          IFS='.' read -r major minor patch <<< "$version_without_v"
-          patch=$((patch + 1))
-          new_version="v${major}.${minor}.${patch}"
-          echo "New version: $new_version"
-          echo "new_version=$new_version" >> $GITHUB_ENV
+      - name: Get next version
+        uses: reecetech/version-increment@2024.10.1
+        id: version
+        with:
+          scheme: semver
+          increment: patch
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: target/x86_64-apple-darwin/release/todo-app
-          tag_name: ${{ env.new_version }}
-          name: Release ${{ env.new_version }}
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
-          body: "Automated release of ${{ env.new_version }} by GitHub Actions"
+          body: "Content ${{ steps.version.outputs.version }}"
