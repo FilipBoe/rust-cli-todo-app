@@ -19,6 +19,11 @@ jobs:
           rustup target add x86_64-apple-darwin
           cargo build --release --target x86_64-apple-darwin
 
+      - name: Debug
+        run: |
+          ls -al
+          tree target -L 2
+
   release:
     runs-on: ubuntu-latest
     needs: build
