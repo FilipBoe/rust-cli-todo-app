@@ -33,7 +33,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: target/x86_64-apple-darwin/release/todo-app
-          name: Release ${{ steps.tag.outputs.release_tag }}
-          tag_name: ${{ steps.tag.outputs.release_tag }}
+          name: ${{ steps.tag.outputs.release_tag }}
+          tag_name: latest
           draft: false
           prerelease: false
