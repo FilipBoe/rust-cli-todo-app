@@ -61,8 +61,8 @@ jobs:
             7z a "$dirname.zip" "$dirname"
             echo "ASSET=$dirname.zip" >> $GITHUB_ENV
           else
-            # tar -czf "$dirname.tar.gz" "$dirname"
-            tar -czf "$dirname.tar.gz" "target/${{ matrix.target }}/release/$binary_name"
+            tar -czf "$dirname.tar.gz" "$dirname"
+            # tar -czf "$dirname.tar.gz" "target/${{ matrix.target }}/release/$binary_name"
             echo "ASSET=$dirname.tar.gz" >> $GITHUB_ENV
           fi
 
