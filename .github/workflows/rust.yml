@@ -50,6 +50,7 @@ jobs:
 
           dirname="$binary_name-${{ steps.version.outputs.version }}-${{ matrix.target }}"
           mkdir "$dirname"
+          echo "dirname is $dirname and matrix.target is ${{ matrix.target }}"
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             mv "target/${{ matrix.target }}/release/$binary_name.exe" "$dirname"
           else
